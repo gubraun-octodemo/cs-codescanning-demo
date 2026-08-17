@@ -14,3 +14,19 @@ var process = Process.Start(new ProcessStartInfo
 });
 
 Console.WriteLine(process?.StandardOutput.ReadToEnd());
+
+// Deliberate vulnerability: untrusted input is used to build a file path
+// without validation, allowing path traversal outside the intended directory.
+Console.Write("Enter a log file name to read: ");
+var fileName = Console.ReadLine() ?? "app.log";
+var logsDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
+var filePath = Path.Combine(logsDirectory, fileName);
+
+if (File.Exists(filePath))
+{
+    Console.WriteLine(File.ReadAllText(filePath));
+}
+else
+{
+    Console.WriteLine($"Log file '{fileName}' not found.");
+}
